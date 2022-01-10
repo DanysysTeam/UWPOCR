@@ -162,7 +162,7 @@ EndFunc   ;==>_UWPOCR_Log
 #Region Internal Functions
 
 Func __UWPOCR_CreateRuntimeClass($sActivatableClassId, $sGUID, $sInterfaceDescription)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
 	#forceref $oErrorHandler
 
 	Local $pFactory = __UWPOCR_RoGetActivationFactory($sActivatableClassId, $sGUID)
@@ -389,7 +389,7 @@ Func __UWPOCR_Initialize()
 EndFunc   ;==>__UWPOCR_Initialize
 
 Func __UWPOCR_LoadLanguageList2DArray()
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
 	#forceref $oErrorHandler
 
 	Local $pFIVLanguages = 0
@@ -449,7 +449,7 @@ Func __UWPOCR_RoGetActivationFactory($shString, $sGUID)
 EndFunc   ;==>__UWPOCR_RoGetActivationFactory
 
 Func __UWPOCR_WaitForAsyncInterface(ByRef $pOutInterface)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
 	#forceref $oErrorHandler
 
 	Local $oAsyncInfo = ObjCreateInterface($pOutInterface, $sIID_IAsyncInfo, $sTag_IAsyncInfo)
