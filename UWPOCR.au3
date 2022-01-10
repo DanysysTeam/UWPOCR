@@ -16,7 +16,7 @@
 #ce Information
 
 #Region Settings
-#AutoIt3Wrapper_AU3Check_Parameters=-q -d -w 1 -w 2 -w 3 -w 4 ;-w 5 -w 6 -w 7
+#AutoIt3Wrapper_AU3Check_Parameters=-q -d -w 1 -w 2 -w 3 -w 4 -w 5 -w 6 -w 7
 #Tidy_Parameters=/tcb=-1 /sf /ewnl /reel /gd ;/sfc
 #EndRegion Settings
 
@@ -147,7 +147,6 @@ Func _UWPOCR_GetSupportedLanguages()
 EndFunc   ;==>_UWPOCR_GetSupportedLanguages
 
 Func _UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse = Default, $bUseOcrLine = False)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
 	_UWPOCR_Log("_UWPOCR_GetText")
 	Return __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine)
 EndFunc   ;==>_UWPOCR_GetText
@@ -163,6 +162,9 @@ EndFunc   ;==>_UWPOCR_Log
 #Region Internal Functions
 
 Func __UWPOCR_CreateRuntimeClass($sActivatableClassId, $sGUID, $sInterfaceDescription)
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	#forceref $oErrorHandler
+
 	Local $pFactory = __UWPOCR_RoGetActivationFactory($sActivatableClassId, $sGUID)
 	Local $oInterface = ObjCreateInterface($pFactory, $sGUID, $sInterfaceDescription)
 	Return $oInterface
@@ -387,6 +389,9 @@ Func __UWPOCR_Initialize()
 EndFunc   ;==>__UWPOCR_Initialize
 
 Func __UWPOCR_LoadLanguageList2DArray()
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	#forceref $oErrorHandler
+
 	Local $pFIVLanguages = 0
 	$__g_oGlobalizationPreferencesStatics.GetLanguages($pFIVLanguages)
 	Local $oFIVLanguages = ObjCreateInterface($pFIVLanguages, $sIID___FIVectorView_1_HSTRING, $sTag___FIVectorView_1_HSTRING)
@@ -444,6 +449,9 @@ Func __UWPOCR_RoGetActivationFactory($shString, $sGUID)
 EndFunc   ;==>__UWPOCR_RoGetActivationFactory
 
 Func __UWPOCR_WaitForAsyncInterface(ByRef $pOutInterface)
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	#forceref $oErrorHandler
+
 	Local $oAsyncInfo = ObjCreateInterface($pOutInterface, $sIID_IAsyncInfo, $sTag_IAsyncInfo)
 	If Not IsObj($oAsyncInfo) Then Return False
 
@@ -511,4 +519,3 @@ Func __UWPOCR_DeleteHString($hString)
 	Return 1
 EndFunc   ;==>__UWPOCR_DeleteHString
 #EndRegion Internal Utils Functions
-
