@@ -193,6 +193,9 @@ Func __UWPOCR_GetStringFromhString($hString)
 EndFunc   ;==>__UWPOCR_GetStringFromhString
 
 Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine = False)
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
+	#forceref $oErrorHandler
+	
 	Local $sTextResult = ""
 	If Not __UWPOCR_Initialize() Then
 		_UWPOCR_Log("FAIL __UWPOCR_Initialize")
