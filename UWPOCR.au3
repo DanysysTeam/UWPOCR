@@ -6,6 +6,7 @@
 
 #cs Information
     Author(s)......: DanysysTeam (Danyfirex & Dany3j)
+    Modified.......: mLipok
     Description....: UWP OCR UDF Universal Windows Platform Optical character recognition
     Remarks........: The current implementation is designed for using under Windows 10
     Version........: 1.0.0
@@ -147,6 +148,9 @@ Func _UWPOCR_GetSupportedLanguages()
 EndFunc   ;==>_UWPOCR_GetSupportedLanguages
 
 Func _UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse = Default, $bUseOcrLine = False)
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
+	#forceref $oErrorHandler
+
 	_UWPOCR_Log("_UWPOCR_GetText")
 	Return __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine)
 EndFunc   ;==>_UWPOCR_GetText
@@ -162,9 +166,6 @@ EndFunc   ;==>_UWPOCR_Log
 #Region Internal Functions
 
 Func __UWPOCR_CreateRuntimeClass($sActivatableClassId, $sGUID, $sInterfaceDescription)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
-	#forceref $oErrorHandler
-
 	Local $pFactory = __UWPOCR_RoGetActivationFactory($sActivatableClassId, $sGUID)
 	Local $oInterface = ObjCreateInterface($pFactory, $sGUID, $sInterfaceDescription)
 	Return $oInterface
@@ -193,9 +194,6 @@ Func __UWPOCR_GetStringFromhString($hString)
 EndFunc   ;==>__UWPOCR_GetStringFromhString
 
 Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine = False)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
-	#forceref $oErrorHandler
-	
 	Local $sTextResult = ""
 	If Not __UWPOCR_Initialize() Then
 		_UWPOCR_Log("FAIL __UWPOCR_Initialize")
@@ -392,9 +390,6 @@ Func __UWPOCR_Initialize()
 EndFunc   ;==>__UWPOCR_Initialize
 
 Func __UWPOCR_LoadLanguageList2DArray()
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
-	#forceref $oErrorHandler
-
 	Local $pFIVLanguages = 0
 	$__g_oGlobalizationPreferencesStatics.GetLanguages($pFIVLanguages)
 	Local $oFIVLanguages = ObjCreateInterface($pFIVLanguages, $sIID___FIVectorView_1_HSTRING, $sTag___FIVectorView_1_HSTRING)
@@ -452,9 +447,6 @@ Func __UWPOCR_RoGetActivationFactory($shString, $sGUID)
 EndFunc   ;==>__UWPOCR_RoGetActivationFactory
 
 Func __UWPOCR_WaitForAsyncInterface(ByRef $pOutInterface)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
-	#forceref $oErrorHandler
-
 	Local $oAsyncInfo = ObjCreateInterface($pOutInterface, $sIID_IAsyncInfo, $sTag_IAsyncInfo)
 	If Not IsObj($oAsyncInfo) Then Return False
 
@@ -522,3 +514,4 @@ Func __UWPOCR_DeleteHString($hString)
 	Return 1
 EndFunc   ;==>__UWPOCR_DeleteHString
 #EndRegion Internal Utils Functions
+
