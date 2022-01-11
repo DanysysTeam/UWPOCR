@@ -171,7 +171,7 @@ Func __UWPOCR_CreateRuntimeClass($sActivatableClassId, $sGUID, $sInterfaceDescri
 EndFunc   ;==>__UWPOCR_CreateRuntimeClass
 
 Func __UWPOCR_ErrorHandler($oError)
-	_UWPOCR_Log(@ScriptName & " (" & $oError.scriptline & ") : ==> COM Error intercepted !" & @CRLF & _
+	_UWPOCR_Log("UWPOCR UDF (" & $oError.scriptline & ") : ==> COM Error intercepted !" & @CRLF & _
 			@TAB & "err.number is: " & @TAB & @TAB & "0x" & Hex($oError.number) & @CRLF & _
 			@TAB & "err.windescription:" & @TAB & $oError.windescription & @CRLF & _
 			@TAB & "err.description is: " & @TAB & $oError.description & @CRLF & _
