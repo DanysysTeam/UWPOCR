@@ -6,7 +6,6 @@
 
 #cs Information
     Author(s)......: DanysysTeam (Danyfirex & Dany3j)
-    Modified.......: mLipok
     Description....: UWP OCR UDF Universal Windows Platform Optical character recognition
     Remarks........: The current implementation is designed for using under Windows 10
     Version........: 1.0.0
