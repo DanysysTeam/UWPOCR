@@ -138,6 +138,9 @@ Global Const $__g_hUWPOCR_SHCore = DllOpen("SHCore.dll")
 #Region Public Functions
 
 Func _UWPOCR_GetSupportedLanguages()
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
+	#forceref $oErrorHandler
+	
 	If Not __UWPOCR_Initialize() Then
 		_UWPOCR_Log("FAIL __UWPOCR_Initialize")
 		Return SetError(@error, @extended, 0)
