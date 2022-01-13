@@ -16,7 +16,7 @@
 #ce Information
 
 #Region Settings
-#AutoIt3Wrapper_AU3Check_Parameters=-q -d -w 1 -w 2 -w 3 -w 4 ;-w 5 -w 6 -w 7
+#AutoIt3Wrapper_AU3Check_Parameters=-q -d -w 1 -w 2 -w 3 -w 4 -w 5 -w 6 -w 7
 #Tidy_Parameters=/tcb=-1 /sf /ewnl /reel /gd ;/sfc
 #EndRegion Settings
 
@@ -138,6 +138,9 @@ Global Const $__g_hUWPOCR_SHCore = DllOpen("SHCore.dll")
 #Region Public Functions
 
 Func _UWPOCR_GetSupportedLanguages()
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
+	#forceref $oErrorHandler
+	
 	If Not __UWPOCR_Initialize() Then
 		_UWPOCR_Log("FAIL __UWPOCR_Initialize")
 		Return SetError(@error, @extended, 0)
@@ -147,7 +150,9 @@ Func _UWPOCR_GetSupportedLanguages()
 EndFunc   ;==>_UWPOCR_GetSupportedLanguages
 
 Func _UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse = Default, $bUseOcrLine = False)
-	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
+	#forceref $oErrorHandler
+
 	_UWPOCR_Log("_UWPOCR_GetText")
 	Return __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine)
 EndFunc   ;==>_UWPOCR_GetText
@@ -169,7 +174,7 @@ Func __UWPOCR_CreateRuntimeClass($sActivatableClassId, $sGUID, $sInterfaceDescri
 EndFunc   ;==>__UWPOCR_CreateRuntimeClass
 
 Func __UWPOCR_ErrorHandler($oError)
-	_UWPOCR_Log(@ScriptName & " (" & $oError.scriptline & ") : ==> COM Error intercepted !" & @CRLF & _
+	_UWPOCR_Log("UWPOCR UDF (" & $oError.scriptline & ") : ==> COM Error intercepted !" & @CRLF & _
 			@TAB & "err.number is: " & @TAB & @TAB & "0x" & Hex($oError.number) & @CRLF & _
 			@TAB & "err.windescription:" & @TAB & $oError.windescription & @CRLF & _
 			@TAB & "err.description is: " & @TAB & $oError.description & @CRLF & _
