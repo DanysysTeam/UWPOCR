@@ -6,6 +6,7 @@ _Example()
 
 Func _Example()
 
+	#Region - create test JPG file
 	_GDIPlus_Startup()
 	;Create Temp Image File
 	Local $sImageFilePath = @ScriptDir & "\SampleImage.jpg"
@@ -21,18 +22,23 @@ Func _Example()
 	;cleanup GDI+ resources
 	_GDIPlus_GraphicsDispose($hBmpCtxt)
 	_GDIPlus_BitmapDispose($hBitmap)
+	_GDIPlus_Shutdown()
+	#EndRegion
 
-	;Get OCR Text
+	Local $hTimer, $sOCRTextResult
+
+	; Get OCR Text
 ;~ 	_UWPOCR_Log(__UWPOCR_Log) ;Enable Log
-	Local $hTimer = TimerInit()
-	Local $sOCRTextResult = _UWPOCR_GetText($sImageFilePath)
+
+	; Get OCR Text without Line Breaks
+	$hTimer = TimerInit()
+	$sOCRTextResult = _UWPOCR_GetText($sImageFilePath)
 	MsgBox(0, "Time Elapsed: " & TimerDiff($hTimer), $sOCRTextResult)
 
-	;Get OCR Text Add Line Breaks
+	; Get OCR Text Add Line Breaks
 	$hTimer = TimerInit()
-	Local $sOCRTextResult = _UWPOCR_GetText($sImageFilePath,Default,True)
+	$sOCRTextResult = _UWPOCR_GetText($sImageFilePath, Default, True)
 	MsgBox(0, "Time Elapsed: " & TimerDiff($hTimer), $sOCRTextResult)
 
 	FileDelete($sImageFilePath)
-	_GDIPlus_Shutdown()
 EndFunc   ;==>_Example
