@@ -5,7 +5,6 @@
 [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 [![Made with Love](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red.svg?colorB=e31b23)]()
 
-
 UWPOCR UDF is a simple library to use Universal Windows Platform Optical character recognition API.
 
 
@@ -44,3 +43,6 @@ See [CHANGELOG.md](CHANGELOG.md)
 Usage is provided under the [MIT](https://choosealicense.com/licenses/mit/) License.
 
 Copyright © 2022, [Danysys.](https://www.danysys.com)
+
+## Related links
+https://www.autoitscript.com/forum/topic/207324-uwpocr-windows-platform-optical-character-recognition-api-implementation
