@@ -65,6 +65,9 @@ Global Const $sTag___FIVectorView_1_HSTRING = $sTag_IInspectable & "GetAt hresul
 Global Const $sIID___FIVectorView_1_Windows__CMedia__COcr__COcrLine = "{60c76eac-8875-5ddb-a19b-65a3936279ea}"
 Global Const $sTag___FIVectorView_1_Windows__CMedia__COcr__COcrLine = $sTag___FIVectorView_1_HSTRING
 
+Global Const $sIID___FIVectorView_1_Windows__CMedia__COcr__COcrWord = "{805a60c7-df4f-527c-86b2-e29e439a83d2}"
+Global Const $sTag___FIVectorView_1_Windows__CMedia__COcr__COcrWord = $sTag___FIVectorView_1_HSTRING
+
 Global Const $sIID_ILanguage = "{EA79A752-F7C2-4265-B1BD-C4DEC4E4F080}"
 Global Const $sTag_ILanguage = $sTag_IInspectable & "GetLanguageTag hresult(ptr*);GetDisplayName hresult(ptr*);GetNativeName hresult(ptr*);GetScript hresult(ptr*);"
 
@@ -98,6 +101,9 @@ Global Const $sTag_IOcrResult = $sTag_IInspectable & "Lines hresult(ptr*);TextAn
 Global Const $sIID_IOcrLine = "{0043A16F-E31F-3A24-899C-D444BD088124}"
 Global Const $sTag_IOcrLine = $sTag_IInspectable & "GetWords hreulst(ptr*);GetText hreulst(ptr*);"
 
+Global Const $sIID_IOcrWord = "{3C2A477A-5CD9-3525-BA2A-23D1E0A68A1D}"
+Global Const $sTag_IOcrWord = $sTag_IInspectable & "GetBoundingRect hresult(struct*);GetText hresult(ptr*);"
+
 Global Const $sIID_IPicture = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
 Global Const $sTag_IPicture = "GetHandle hresult();GethPal hresult();GetType hresult();GetWidth hresult();GetHeight hresult();Render hresult();SethPal hresult();" & _
 		"GetCurDC hresult();SelectPicture hresult();GetKeepOriginalFormat hresult();PutKeepOriginalFormat hresult();" & _
@@ -116,6 +122,7 @@ Global Const $__g_hUWPOCR_SHCore = DllOpen("SHCore.dll")
 ; #CURRENT# =====================================================================================================================
 ; _UWPOCR_GetSupportedLanguages
 ; _UWPOCR_GetText
+; _UWPOCR_GetWordsRectTo2DArray
 ; _UWPOCR_Log
 ; ===============================================================================================================================
 
@@ -140,7 +147,7 @@ Global Const $__g_hUWPOCR_SHCore = DllOpen("SHCore.dll")
 Func _UWPOCR_GetSupportedLanguages()
 	Local $oErrorHandler = ObjEvent("AutoIt.Error", __UWPOCR_ErrorHandler)
 	#forceref $oErrorHandler
-	
+
 	If Not __UWPOCR_Initialize() Then
 		_UWPOCR_Log("FAIL __UWPOCR_Initialize")
 		Return SetError(@error, @extended, 0)
@@ -156,6 +163,12 @@ Func _UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse = Default, $bU
 	_UWPOCR_Log("_UWPOCR_GetText")
 	Return __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine)
 EndFunc   ;==>_UWPOCR_GetText
+
+Func _UWPOCR_GetWordsRectTo2DArray($sImageFilePathOrhBitmap, $sLanguageTagToUse = Default)
+	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	_UWPOCR_Log("_UWPOCR_GetWordsRectTo2DArray")
+	Return __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, False, True)
+EndFunc   ;==>_UWPOCR_GetWordsRectTo2DArray
 
 Func _UWPOCR_Log($pCallFunction = Default, Const $iCurrentError = @error, Const $iCurrentExtended = @extended, Const $iScriptLineNumber = @ScriptLineNumber)
 	Local Static $pFunction = Default
@@ -195,7 +208,7 @@ Func __UWPOCR_GetStringFromhString($hString)
 	Return $aCall[0]
 EndFunc   ;==>__UWPOCR_GetStringFromhString
 
-Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine = False)
+Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine = False, $bReturnWordsRect2DArray = False)
 	Local $sTextResult = ""
 	If Not __UWPOCR_Initialize() Then
 		_UWPOCR_Log("FAIL __UWPOCR_Initialize")
@@ -337,6 +350,8 @@ Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine
 	Local $iAngle = 0
 	$oOcrResult.TextAngle($iAngle)
 
+	If $bReturnWordsRect2DArray = True Then $bUseOcrLine = True
+	Local $aOcrResultWords[0][5] ;Word Text;X,Y,Width,Height
 	If $bUseOcrLine Then
 		Local $pFIVOcrLines = 0
 		$oOcrResult.Lines($pFIVOcrLines)
@@ -349,11 +364,51 @@ Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine
 		Local $pIOCRLine = 0
 		Local $oIOCRLine = 0
 		Local $phStringLine = ""
+
+		Local $pFIVOcrWords = 0
+		Local $oFIVOcrWords = 0
+		Local $iCountWords = 0
+		Local $pIOCRWord = 0
+		Local $oIOCRWord = 0
+		Local $tWordRect = ""
+		Local $phStringWord = ""
+		Local $iCountWordsIndex = 0
 		For $i = 0 To $iCountLines - 1
 			$oFIVOcrLines.GetAt($i, $pIOCRLine)
 			$oIOCRLine = ObjCreateInterface($pIOCRLine, $sIID_IOcrLine, $sTag_IOcrLine)
 			$oIOCRLine.GetText($phStringLine)
 			$sTextResult &= __UWPOCR_GetStringFromhString($phStringLine) & @CRLF
+
+			If $bReturnWordsRect2DArray Then
+				$oIOCRLine.GetWords($pFIVOcrWords)
+				$oFIVOcrWords = ObjCreateInterface($pFIVOcrWords, $sIID___FIVectorView_1_Windows__CMedia__COcr__COcrWord, _
+						$sTag___FIVectorView_1_Windows__CMedia__COcr__COcrWord)
+				$oFIVOcrWords.GetSize($iCountWords)
+				If $iCountWords Then
+					ReDim $aOcrResultWords[UBound($aOcrResultWords) + $iCountWords][5]
+
+					For $x = 0 To $iCountWords - 1
+						$oFIVOcrWords.GetAt($x, $pIOCRWord)
+						$oIOCRWord = ObjCreateInterface($pIOCRWord, $sIID_IOcrWord, $sTag_IOcrWord)
+						$tWordRect = DllStructCreate("FLOAT X;FLOAT Y;FLOAT Width;FLOAT Height;")
+						$oIOCRWord.GetBoundingRect($tWordRect)
+						$oIOCRWord.GetText($phStringWord)
+
+						$aOcrResultWords[$iCountWordsIndex][0] = __UWPOCR_GetStringFromhString($phStringWord)
+						$aOcrResultWords[$iCountWordsIndex][1] = $tWordRect.X
+						$aOcrResultWords[$iCountWordsIndex][2] = $tWordRect.Y
+						$aOcrResultWords[$iCountWordsIndex][3] = $tWordRect.Width
+						$aOcrResultWords[$iCountWordsIndex][4] = $tWordRect.Height
+						$iCountWordsIndex += 1
+
+						__UWPOCR_DeleteHString($phStringWord)
+						$oIOCRWord = 0
+						$tWordRect = 0
+					Next
+
+				EndIf
+			EndIf
+
 			__UWPOCR_DeleteHString($phStringLine)
 			$oIOCRLine = 0
 		Next
@@ -365,7 +420,12 @@ Func __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, $bUseOcrLine
 		__UWPOCR_DeleteHString($phResultText)
 	EndIf
 
-	Return SetError(@error, $iAngle, $sTextResult)
+	If $bReturnWordsRect2DArray Then
+		Return SetError(@error, $iAngle, $aOcrResultWords)
+	Else
+
+		Return SetError(@error, $iAngle, $sTextResult)
+	EndIf
 
 EndFunc   ;==>__UWPOCR_GetText
 
