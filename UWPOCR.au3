@@ -166,6 +166,7 @@ EndFunc   ;==>_UWPOCR_GetText
 
 Func _UWPOCR_GetWordsRectTo2DArray($sImageFilePathOrhBitmap, $sLanguageTagToUse = Default)
 	Local $oErrorHandler = ObjEvent("AutoIt.Error", "__UWPOCR_ErrorHandler")
+	#forceref $oErrorHandler
 	_UWPOCR_Log("_UWPOCR_GetWordsRectTo2DArray")
 	Return __UWPOCR_GetText($sImageFilePathOrhBitmap, $sLanguageTagToUse, False, True)
 EndFunc   ;==>_UWPOCR_GetWordsRectTo2DArray
